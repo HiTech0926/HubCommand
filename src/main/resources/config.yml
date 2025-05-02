@@ -1,0 +1,10 @@
+# 是否启用该插件
+Enable: true
+# 大厅服务器名称
+LobbyServer: lobby
+# 正在传送提示
+SendSuccessful: "&7[&e&lHubCommand&7]&a 正在传送到大厅服务器！"
+# 没有权限提示
+NoPermission: "&7[&e&lHubCommand&7]&c 你没有权限执行此命令！"
+# 控制台执行提示
+NoConsole: "&7[&e&lHubCommand&7]&c 此命令只能由玩家执行！"
