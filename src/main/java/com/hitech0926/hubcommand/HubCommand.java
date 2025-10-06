@@ -27,7 +27,7 @@ import java.util.Optional;
 @Plugin(
         id = "hubcommand",
         name = "HubCommand",
-        version = "1.0.0",
+        version = "1.0.3",
         authors = {"Hitech0926"}
 )
 public class HubCommand {
@@ -75,11 +75,26 @@ public class HubCommand {
     }
 
     private void loadConfig() {
+        if (!Files.exists(dataDirectory)) {
+            try {
+                Files.createDirectories(dataDirectory);
+            } catch (IOException e) {
+                logger.error("无法创建插件目录", e);
+                return;
+            }
+        }
+
         File file = dataDirectory.resolve("config.yml").toFile();
         Yaml yaml = new Yaml();
         if (!file.exists()) {
             try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config.yml")) {
-                Files.copy(inputStream, file.toPath());
+                if (inputStream != null) {
+                    Files.copy(inputStream, file.toPath());
+                    logger.info("配置文件已创建！");
+                } else {
+                    logger.error("无法找到默认配置文件");
+                    return;
+                }
             } catch (IOException e) {
                 logger.error("无法创建配置文件", e);
                 return;
@@ -92,6 +107,8 @@ public class HubCommand {
             sendSuccessful = (String) config.getOrDefault("send-successful", "<green>你已被传送到大厅！");
             noPermission = (String) config.getOrDefault("no-permission", "<red>你没有权限执行此命令！");
             noConsole = (String) config.getOrDefault("no-console", "<red>只有玩家可以执行此命令！");
+
+            logger.info("配置文件加载成功！");
         } catch (IOException e) {
             logger.error("无法加载配置文件", e);
         }
