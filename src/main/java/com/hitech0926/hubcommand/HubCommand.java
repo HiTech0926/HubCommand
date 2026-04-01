@@ -13,6 +13,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.slf4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
@@ -102,11 +103,11 @@ public class HubCommand {
         }
         try (InputStream inputStream = Files.newInputStream(file.toPath())) {
             Map<String, Object> config = yaml.load(inputStream);
-            enabled = (boolean) config.getOrDefault("enabled", true);
-            lobbyServer = (String) config.getOrDefault("lobby-server", "lobby");
-            sendSuccessful = (String) config.getOrDefault("send-successful", "<green>你已被传送到大厅！");
-            noPermission = (String) config.getOrDefault("no-permission", "<red>你没有权限执行此命令！");
-            noConsole = (String) config.getOrDefault("no-console", "<red>只有玩家可以执行此命令！");
+            enabled = (boolean) config.getOrDefault("Enable", true);
+            lobbyServer = (String) config.getOrDefault("LobbyServer", "lobby");
+            sendSuccessful = (String) config.getOrDefault("SendSuccessful", "<green>你已被传送到大厅！");
+            noPermission = (String) config.getOrDefault("NoPermission", "<red>你没有权限执行此命令！");
+            noConsole = (String) config.getOrDefault("NoConsole", "<red>只有玩家可以执行此命令！");
 
             logger.info("配置文件加载成功！");
         } catch (IOException e) {
@@ -134,13 +135,13 @@ public class HubCommand {
             if (args.length == 0) {
                 // 玩家传送自己
                 if (!(source instanceof Player)) {
-                    source.sendMessage(MiniMessage.miniMessage().deserialize(plugin.noConsole));
+                    source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.noConsole));
                     return;
                 }
 
                 Player player = (Player) source;
                 if (!player.hasPermission("hubcommand.player")) {
-                    player.sendMessage(MiniMessage.miniMessage().deserialize(plugin.noPermission));
+                    player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.noPermission));
                     return;
                 }
 
@@ -148,7 +149,7 @@ public class HubCommand {
             } else if (args.length == 1) {
                 // 管理员传送其他玩家
                 if (!source.hasPermission("hubcommand.admin")) {
-                    source.sendMessage(MiniMessage.miniMessage().deserialize(plugin.noPermission));
+                    source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.noPermission));
                     return;
                 }
 
@@ -163,7 +164,7 @@ public class HubCommand {
             Optional<RegisteredServer> lobbyServer = plugin.getServer().getServer(plugin.lobbyServer);
             if (lobbyServer.isPresent()) {
                 player.createConnectionRequest(lobbyServer.get()).fireAndForget();
-                player.sendMessage(MiniMessage.miniMessage().deserialize(plugin.sendSuccessful));
+                player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.sendSuccessful));
             }
         }
     }
